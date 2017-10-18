@@ -1,8 +1,19 @@
+from random import shuffle
+
+import cv2
 import numpy as np
 
 from datetime import datetime
-from scipy.io import loadmat, savemat
 
+import sys
+import os
+
+from os.path import isfile, join
+from scipy.io import loadmat, savemat
+from math import floor
+
+LOWEST_ALLOWED_CHAR = 33
+HIGHEST_ALLOWED_CHAR = 126
 
 class Dataset:
 
@@ -36,7 +47,7 @@ class Dataset:
             self._train_images = list()
 
     def add_image(self, image, label, test_data=False):
-
+        print(len(image))
         if len(image) != len(self.data['dataset'][0][0][0][0][0][0][0]):
             raise Exception("Image data should be an array of length 784")
 
@@ -63,5 +74,42 @@ class Dataset:
         if len(self._train_images) > 0:
             self._append_to_dataset()
 
-        file_name = 'dataset/wlc-byclass-{}.mat'.format(datetime.now())
+        file_name = 'dataset/wlc-byclass-{}.mat'.format(str(datetime.now()).replace(' ', '-').replace(':', '-'))
         savemat(file_name=file_name, mdict=self.data, do_compression=do_compression)
+
+    def add_images_from_files(self, directory, files, label, test_data):
+        for file in files:
+            file_path = '{}/{}'.format(directory, file)
+            img = cv2.imread(file_path)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+            img = np.reshape(img, 28 * 28)
+            img = img.astype('float32')
+            # Normalize to prevent issues with model
+            img /= 255
+
+            self.add_image(img, label, test_data)
+
+
+if __name__ == '__main__':
+    if not len(sys.argv) == 2:
+        raise ValueError('Expected 1 argument but got {}'.format(len(sys.argv) - 1))
+
+    path = sys.argv[1]
+
+    dataset = Dataset()
+
+    for i in range(LOWEST_ALLOWED_CHAR, HIGHEST_ALLOWED_CHAR + 1):
+        directory = '{}/{}'.format(path, i)
+        if os.path.exists(directory):
+            files = [f for f in os.listdir(directory) if isfile(join(directory, f))]
+            shuffle(files)
+            training_count = floor(len(files) * 0.8)
+
+            training_set = files[:training_count]
+            testing_set = files[training_count:]
+
+            dataset.add_images_from_files(directory, training_set, chr(i), False)
+            dataset.add_images_from_files(directory, testing_set, chr(i), True)
+
+    dataset.save()
