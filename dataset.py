@@ -1,4 +1,4 @@
-from random import shuffle
+from random import shuffle, choice
 
 import cv2
 import numpy as np
@@ -14,6 +14,12 @@ from math import floor
 
 LOWEST_ALLOWED_CHAR = 33
 HIGHEST_ALLOWED_CHAR = 126
+
+MAX_ROTATION = 5
+STEP = 1
+
+TARGET_IMAGES = 10000
+ADDITIONAL = [40, 41, 58, 61]
 
 class Dataset:
 
@@ -47,7 +53,6 @@ class Dataset:
             self._train_images = list()
 
     def add_image(self, image, label, test_data=False):
-        print(len(image))
         if len(image) != len(self.data['dataset'][0][0][0][0][0][0][0]):
             raise Exception("Image data should be an array of length 784")
 
@@ -77,18 +82,86 @@ class Dataset:
         file_name = 'dataset/wlc-byclass-{}.mat'.format(str(datetime.now()).replace(' ', '-').replace(':', '-'))
         savemat(file_name=file_name, mdict=self.data, do_compression=do_compression)
 
-    def add_images_from_files(self, directory, files, label, test_data):
-        for file in files:
-            file_path = '{}/{}'.format(directory, file)
-            img = cv2.imread(file_path)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-            img = np.reshape(img, 28 * 28)
-            img = img.astype('float32')
-            # Normalize to prevent issues with model
-            img /= 255
-
+    def add_images_from_files(self, images, label, test_data):
+        for img in images:
             self.add_image(img, label, test_data)
+
+
+def gray_scale(img):
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    return img
+
+
+def normalize(img):
+    img = np.reshape(img, 28 * 28)
+    img = img.astype('float32')
+    # Normalize to prevent issues with model
+    img /= 255
+    return img
+
+
+def rotate_image(img, angle):
+    # Calculate center, the pivot point of rotation
+    (height, width) = img.shape[:2]
+    center = (width // 2, height // 2)
+
+    # Rotate
+    rot_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+    img = cv2.warpAffine(img, rot_matrix, (width, height), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+    return img
+
+
+def can_shift(img, i, j):
+    shift = True
+
+    if i == -1:
+        shift = not np.any(img[0, :])
+    elif i == 1:
+        shift = not np.any(img[27, :])
+
+    if j == -1 and shift:
+        return not np.any(img[:, [0]])
+    elif j == 1 and shift:
+        return not np.any(img[:, [27]])
+    return shift
+
+
+def shift(img, i, j):
+    top, bottom, left, right = 0, 0, 0, 0
+
+    if i == -1:
+        img = img[1:, :]
+        bottom = 1
+    elif i == 1:
+        img = img[:27, :]
+        top = 1
+
+    if j == -1:
+        img = img[:, 1:]
+        right = 1
+    elif j == 1 and shift:
+        img = img[:, :27]
+        left = 1
+
+    return cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT, value=[0, 0, 0])
+
+
+def shift_image(img):
+    images = list()
+    for i in range(-1, 2):
+        for j in range(-1, 2):
+            if can_shift(img, i, j):
+                shifted = shift(img, i, j)
+                images.append(normalize(shifted))
+    return images
+
+
+def extend_image_set(images, count):
+    extra = list()
+    while len(images) + len(extra) < count:
+        extra.append(choice(images))
+    images.extend(extra)
+    return images
 
 
 if __name__ == '__main__':
@@ -99,17 +172,30 @@ if __name__ == '__main__':
 
     dataset = Dataset()
 
-    for i in range(LOWEST_ALLOWED_CHAR, HIGHEST_ALLOWED_CHAR + 1):
+    # for i in range(LOWEST_ALLOWED_CHAR, HIGHEST_ALLOWED_CHAR + 1):
+    for i in ADDITIONAL:
         directory = '{}/{}'.format(path, i)
         if os.path.exists(directory):
             files = [f for f in os.listdir(directory) if isfile(join(directory, f))]
-            shuffle(files)
-            training_count = floor(len(files) * 0.8)
+            images = list()
 
-            training_set = files[:training_count]
-            testing_set = files[training_count:]
+            for file in files:
+                file_path = '{}/{}'.format(directory, file)
+                img = cv2.imread(file_path)
+                img = gray_scale(img)
 
-            dataset.add_images_from_files(directory, training_set, chr(i), False)
-            dataset.add_images_from_files(directory, testing_set, chr(i), True)
+                for angle in range(-MAX_ROTATION, MAX_ROTATION + STEP, STEP):
+                    rotated = rotate_image(img, angle)
+                    images.extend(shift_image(rotated))
+
+            shuffle(images)
+            training_count = floor(len(images) * 0.8)
+
+            print('Character: {}, Set Length: {}'.format(chr(i), len(images)))
+            training_set = extend_image_set(images[:training_count], round(TARGET_IMAGES * 0.8))
+            testing_set = extend_image_set(images[training_count:],  round(TARGET_IMAGES * 0.2))
+
+            dataset.add_images_from_files(training_set, chr(i), False)
+            dataset.add_images_from_files(testing_set, chr(i), True)
 
     dataset.save()
