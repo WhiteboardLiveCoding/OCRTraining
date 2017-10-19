@@ -97,6 +97,12 @@ def load_data(emnist_file_path, wlc_file_path, width=28, height=28, verbose=True
     return (training_images, training_labels), (testing_images, testing_labels), mapping, nb_classes
 
 
+def unison_shuffled_copies(a, b):
+    assert len(a) == len(b)
+    p = np.random.permutation(len(a))
+    return a[p], b[p]
+
+
 def build_net(training_data, width=28, height=28, verbose=False):
     # Initialize data
     _, _, mapping, nb_classes = training_data
@@ -143,7 +149,7 @@ def train(model, training_data, callback=True, batch_size=256, epochs=10):
     if callback:
         # Callback for analysis in TensorBoard
         tb_callback = keras.callbacks.TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True,
-                                                 write_images=True)
+                                                  write_images=True)
 
     model.fit(x_train, y_train,
               batch_size=batch_size,

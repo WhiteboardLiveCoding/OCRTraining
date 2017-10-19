@@ -1,5 +1,6 @@
 from random import shuffle, choice
 
+import argparse
 import cv2
 import numpy as np
 
@@ -18,7 +19,7 @@ HIGHEST_ALLOWED_CHAR = 126
 MAX_ROTATION = 5
 STEP = 1
 
-TARGET_IMAGES = 10000
+TARGET_IMAGES = 1000
 ADDITIONAL = [40, 41, 58, 61]
 
 class Dataset:
@@ -95,8 +96,6 @@ def gray_scale(img):
 def normalize(img):
     img = np.reshape(img, 28 * 28)
     img = img.astype('float32')
-    # Normalize to prevent issues with model
-    img /= 255
     return img
 
 
@@ -164,17 +163,27 @@ def extend_image_set(images, count):
     return images
 
 
-if __name__ == '__main__':
-    if not len(sys.argv) == 2:
-        raise ValueError('Expected 1 argument but got {}'.format(len(sys.argv) - 1))
+def arguments():
+    parser = argparse.ArgumentParser()
 
-    path = sys.argv[1]
+    parser.add_argument("-i", "--images", type=str, help="Path to characters", required=True)
+    parser.add_argument("-m", "--minimages", type=int, default=TARGET_IMAGES, help="Minimum number of characters")
+
+    args, unknown = parser.parse_known_args()
+    images = args.images
+    minimages = args.minimages
+
+    return images, minimages,
+
+
+if __name__ == '__main__':
+    images, min_images = arguments()
 
     dataset = Dataset()
 
     # for i in range(LOWEST_ALLOWED_CHAR, HIGHEST_ALLOWED_CHAR + 1):
     for i in ADDITIONAL:
-        directory = '{}/{}'.format(path, i)
+        directory = '{}/{}'.format(images, i)
         if os.path.exists(directory):
             files = [f for f in os.listdir(directory) if isfile(join(directory, f))]
             images = list()
@@ -192,8 +201,8 @@ if __name__ == '__main__':
             training_count = floor(len(images) * 0.8)
 
             print('Character: {}, Set Length: {}'.format(chr(i), len(images)))
-            training_set = extend_image_set(images[:training_count], round(TARGET_IMAGES * 0.8))
-            testing_set = extend_image_set(images[training_count:],  round(TARGET_IMAGES * 0.2))
+            training_set = extend_image_set(images[:training_count], round(min_images * 0.8))
+            testing_set = extend_image_set(images[training_count:],  round(min_images * 0.2))
 
             dataset.add_images_from_files(training_set, chr(i), False)
             dataset.add_images_from_files(testing_set, chr(i), True)
