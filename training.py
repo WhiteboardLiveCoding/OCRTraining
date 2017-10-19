@@ -38,9 +38,6 @@ def append_datasets(arr1, arr2):
 
 
 def load_data(emnist_file_path, wlc_file_path, width=28, height=28, verbose=True):
-    wlc_training_images, wlc_training_labels = None, None
-    wlc_testing_images, wlc_testing_labels = None, None
-
     # Load .mat dataset
     emnist = loadmat(emnist_file_path)
     wlc = None
