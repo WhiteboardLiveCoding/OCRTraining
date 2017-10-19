@@ -59,16 +59,6 @@ def load_data(emnist_file_path, wlc_file_path, width=28, height=28, verbose=True
     training_images, training_labels = extract_images_and_labels(emnist)
     testing_images, testing_labels = extract_images_and_labels(emnist, training_data=False)
 
-    if wlc_file_path:
-        wlc_training_images, wlc_training_labels = extract_images_and_labels(wlc)
-        wlc_testing_images, wlc_testing_labels = extract_images_and_labels(wlc, training_data=False)
-
-        training_images = append_datasets(training_images, wlc_training_images)
-        training_labels = append_datasets(training_labels, wlc_training_labels)
-
-        testing_images = append_datasets(testing_images, wlc_testing_images)
-        testing_labels = append_datasets(testing_labels, wlc_testing_labels)
-
     # Reshape training data to be valid
     if verbose: _len = len(training_images)
     for i in range(len(training_images)):
