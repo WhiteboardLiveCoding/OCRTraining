@@ -173,13 +173,13 @@ def arguments():
 
 
 if __name__ == '__main__':
-    images, min_images = arguments()
+    images_path, min_images = arguments()
 
     dataset = Dataset()
 
     # for i in range(LOWEST_ALLOWED_CHAR, HIGHEST_ALLOWED_CHAR + 1):
     for i in ADDITIONAL:
-        directory = '{}/{}'.format(images, i)
+        directory = '{}/{}'.format(images_path, i)
         if os.path.exists(directory):
             files = [f for f in os.listdir(directory) if isfile(join(directory, f))]
             images = list()
