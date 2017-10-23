@@ -1,17 +1,13 @@
-from random import shuffle, choice
-
 import argparse
 import cv2
 import numpy as np
-
-from datetime import datetime
-
-import sys
 import os
 
 from os.path import isfile, join
 from scipy.io import loadmat, savemat
 from math import floor
+from datetime import datetime
+from random import shuffle, choice
 
 LOWEST_ALLOWED_CHAR = 33
 HIGHEST_ALLOWED_CHAR = 126
