@@ -16,7 +16,7 @@ MAX_ROTATION = 5
 STEP = 1
 
 TARGET_IMAGES = 1000
-ADDITIONAL = [40, 41, 58, 61]
+ADDITIONAL = [40, 41, 42, 43, 45, 58, 61]
 
 class Dataset:
 
@@ -181,7 +181,7 @@ if __name__ == '__main__':
     for i in ADDITIONAL:
         directory = '{}/{}'.format(images_path, i)
         if os.path.exists(directory):
-            files = [f for f in os.listdir(directory) if isfile(join(directory, f))]
+            files = [f for f in os.listdir(directory) if isfile(join(directory, f)) and f != ".DS_Store"]
             images = list()
 
             for file in files:
