@@ -12,10 +12,11 @@ from models import convolutional, recurrent_l1
 def build_model(training_data, model_id, height=28, width=28, multi_gpu=False, gpus=1):
     model = None
 
-    if model_id == convolutional.get_model_id():
-        model = convolutional.build(training_data, height=height, width=width)
-    elif model_id == recurrent_l1.get_model_id():
-        model = recurrent_l1.build(training_data, height=height, width=width)
+    with tf.device('/cpu:0'):
+        if model_id == convolutional.get_model_id():
+            model = convolutional.build(training_data, height=height, width=width)
+        elif model_id == recurrent_l1.get_model_id():
+            model = recurrent_l1.build(training_data, height=height, width=width)
 
     if multi_gpu:
         model = _use_multi_gpu(model, gpus=gpus)
