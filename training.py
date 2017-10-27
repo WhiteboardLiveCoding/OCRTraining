@@ -17,13 +17,14 @@ def parse_arguments():
     parser.add_argument('-e', '--epochs', type=int, default=10, help='number of epochs to train the model on')
     parser.add_argument('-g', '--gpus', type=int, default=1, help='number of gpus to be used')
     parser.add_argument('-b', '--batch', type=int, default=64, help='batch size for training')
+    parser.add_argument('-d', '--device', type=str, default='/cpu:0', help='device to be used for training')
     parser.add_argument('-m', '--model', type=str, default='convolutional', help='keras model to be trained')
     parser.add_argument('-p', '--parallel', action='store_true', default=False, help='use multi gpu model')
 
     return parser.parse_args()
 
 
-def main(args):
+def main():
     if args.output[0] is '/':
         print('Please make sure that the output directory has no leading \'/\'')
         sys.exit(1)
@@ -45,16 +46,16 @@ def main(args):
         print('Model {} does not exist.'.format(args.model))
         sys.exit(1)
 
-    train(model, training_data, epochs=args.epochs, batch_size=args.batch)
+    train(model, training_data, epochs=args.epochs, batch_size=args.batch, device=args.device)
 
     save_model_to_file(model, args.output)
 
 
 if __name__ == '__main__':
-    parsed_args = parse_arguments()
+    args = parse_arguments()
 
     from utils.dataset import load_data
     from utils.model import build_model, save_model_to_file
     from utils.train import train
 
-    main(parsed_args)
+    main()

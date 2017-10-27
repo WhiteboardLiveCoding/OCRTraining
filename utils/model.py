@@ -4,9 +4,10 @@ from keras.layers.merge import concatenate
 from keras.layers.core import Lambda
 from keras.models import save_model
 from keras.engine.training import Model
-from tensorflow.python.client import device_lib
 
 from models import convolutional, recurrent_l1
+
+from utils.device import get_available_devices, normalize_device_name
 
 
 def build_model(training_data, model_id, height=28, width=28, multi_gpu=False, gpus=1):
@@ -41,16 +42,6 @@ def save_model_to_file(model, output):
     save_model(model, weights_yaml)
 
 
-def _get_available_devices():
-    local_device_protos = device_lib.list_local_devices()
-    return [x.name for x in local_device_protos]
-
-
-def _normalize_device_name(name):
-    name = name.lower().replace('device:', '')
-    return name
-
-
 def _use_multi_gpu(model, gpus):
     if gpus <= 1:
         raise ValueError('For multi-gpu usage to be effective, '
@@ -58,8 +49,8 @@ def _use_multi_gpu(model, gpus):
                          'Received: `gpus=%d`' % gpus)
 
     target_devices = ['/cpu:0'] + ['/gpu:%d' % i for i in range(gpus)]
-    available_devices = _get_available_devices()
-    available_devices = [_normalize_device_name(name) for name in available_devices]
+    available_devices = get_available_devices()
+    available_devices = [normalize_device_name(name) for name in available_devices]
     for device in target_devices:
         if device not in available_devices:
             raise ValueError(
