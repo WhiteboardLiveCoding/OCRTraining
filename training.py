@@ -29,6 +29,9 @@ def main():
         print('Please make sure that the output directory has no leading \'/\'')
         sys.exit(1)
 
+    if args.parallel:
+        print("Using the multi gpu models. The target device will be neglected.")
+
     bin_dir = os.path.dirname(os.path.realpath(__file__)) + '/' + args.output
     if not os.path.exists(bin_dir):
         os.makedirs(bin_dir)
@@ -46,7 +49,7 @@ def main():
         print('Model {} does not exist.'.format(args.model))
         sys.exit(1)
 
-    train(model, training_data, epochs=args.epochs, batch_size=args.batch, device=args.device)
+    train(model, training_data, epochs=args.epochs, batch_size=args.batch, device=args.device, parallel=args.parallel)
 
     save_model_to_file(model, args.output)
 

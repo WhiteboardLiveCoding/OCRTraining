@@ -6,16 +6,19 @@ from keras.utils import np_utils
 from utils.device import get_available_devices, normalize_device_name
 
 
-def train(model, training_data, callback=True, batch_size=32, epochs=10, device='/cpu:0'):
+def train(model, training_data, callback=True, batch_size=32, epochs=10, device='/cpu:0', parallel=False):
 
-    available_devices = get_available_devices()
-    available_devices = [normalize_device_name(name) for name in available_devices]
+    if parallel:
+        available_devices = get_available_devices()
+        available_devices = [normalize_device_name(name) for name in available_devices]
 
-    if device not in available_devices:
-        raise ValueError('Target \'{}\' could not be found. Devices available are {}'.format(device,
-                                                                                             available_devices))
+        if device not in available_devices:
+            raise ValueError('Target \'{}\' could not be found. Devices available are {}'.format(device,
+                                                                                                 available_devices))
 
-    with tf.device(device):
+        with tf.device(device):
+            score = _train_model(model, training_data, callback=callback, batch_size=batch_size, epochs=epochs)
+    else:
         score = _train_model(model, training_data, callback=callback, batch_size=batch_size, epochs=epochs)
 
     print('Test score:', score[0])
