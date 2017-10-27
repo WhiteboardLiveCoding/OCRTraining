@@ -19,11 +19,12 @@ def build_model(training_data, model_id, height=28, width=28, multi_gpu=False, g
     if multi_gpu:
         model = _use_multi_gpu(model, gpus=gpus)
 
-    model.compile(loss='categorical_crossentropy',
-                  optimizer='adadelta',
-                  metrics=['accuracy'])
+    if model:
+        model.compile(loss='categorical_crossentropy',
+                      optimizer='adadelta',
+                      metrics=['accuracy'])
 
-    print(model.summary())
+        print(model.summary())
 
     return model
 
