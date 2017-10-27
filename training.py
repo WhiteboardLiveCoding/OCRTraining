@@ -18,7 +18,7 @@ def parse_arguments():
     parser.add_argument('-g', '--gpus', type=int, default=1, help='number of gpus to be used')
     parser.add_argument('-b', '--batch', type=int, default=64, help='batch size for training')
     parser.add_argument('-m', '--model', type=str, default='convolutional', help='keras model to be trained')
-    parser.add_argument('-p', '--parallel', action='store_true', default=False, help='enable multiple gpu usage')
+    parser.add_argument('-p', '--parallel', action='store_true', default=False, help='use multi gpu model')
 
     return parser.parse_args()
 

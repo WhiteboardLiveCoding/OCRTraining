@@ -3,24 +3,39 @@ OCR Training
 
 This repository holds the script to train the neural network used in
 [WhiteboadLiveCoding](https://github.com/WhiteboardLiveCoding/WhiteboardLiveCoding).
-It also houses the script to add images to the dataset and run a local
-flask server to test the tensorflow model before using it in WhiteboardLiveCoding.
-## Usage
-#### [training.py](training.py)
-A training program for classifying the EMNIST dataset
+It also houses the script to add images to the dataset.
 
-    usage: training.py [-h] --emnist --wlc [--epochs EPOCHS] [--verbose]
+## Usage
+
+#### [training.py](training.py)
+
+    usage: training.py --emnist <path-to-emnist.mat> --wlc <path-to-wlc.mat>
 
 ##### Required Arguments:
 
-    --emnist FILE  Path emnist-byclass-extended.mat file data
-    --wlc FILE  Path wlc-byclass.mat file data
+    --emnist EMNIST       path for the EMNIST dataset
+    --wlc WLC             path for the WLC dataset
 
 ##### Optional Arguments
 
-    -h, --help            show this help message and exit
-    --epochs EPOCHS       Number of epochs to train on
-    --verbose         Enables verbose printing
+    -h, --help            show the help message and exit
+    -o OUTPUT, --output OUTPUT
+                          output directory for the model(without /)
+                          default: bin
+    -e EPOCHS, --epochs EPOCHS
+                          number of epochs to train the model on
+                          default: 10
+    -g GPU, --gpu GPU     number of the gpu to be used
+                          default: 1
+    -b BATCH, --batch BATCH
+                          batch size for training
+                          default: 64
+    -m MODEL, --model MODEL
+                          keras model to be trained
+                          default: convolutional
+    -p , --parallel
+                          use multi gpu model
+
 
 #### [dataset.py](dataset.py)
 
@@ -45,17 +60,5 @@ and add more images to it.
     # A do_compression=False argument can be supplied to save an uncompressed dataset
     dataset.save(do_compression=False)
 ```
-
-#### [server.py](server.py)
-A webapp for testing models generated from [training.py](training.py) on the EMNIST+WLC dataset
-
-    usage: server.py [-h] [--bin BIN] [--host HOST] [--port PORT]
-
-##### Optional Arguments:
-
-    -h, --help   show this help message and exit
-    --bin BIN    Directory to the bin containing the model yaml and model h5 files
-    --host HOST  The host to run the flask server on
-    --port PORT  The port to run the flask server on
 
 Based on a project by @coopss
