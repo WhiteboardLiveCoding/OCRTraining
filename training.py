@@ -47,14 +47,14 @@ def main(args):
 
     train(model, training_data, epochs=args.epochs, batch_size=args.batch)
 
-    save_model(model, args.output)
+    save_model_to_file(model, args.output)
 
 
 if __name__ == '__main__':
     parsed_args = parse_arguments()
 
     from utils.dataset import load_data
-    from utils.model import build_model, save_model
+    from utils.model import build_model, save_model_to_file
     from utils.train import train
 
     main(parsed_args)

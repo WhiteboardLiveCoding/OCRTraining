@@ -2,6 +2,7 @@ import tensorflow as tf
 
 from keras.layers.merge import concatenate
 from keras.layers.core import Lambda
+from keras.models import save_model
 from keras.engine.training import Model
 from tensorflow.python.client import device_lib
 
@@ -11,9 +12,9 @@ from models import convolutional, recurrent_l1
 def build_model(training_data, model_id, height=28, width=28, multi_gpu=False, gpus=1):
     model = None
 
-    if model_id is convolutional.get_model_id():
+    if model_id == convolutional.get_model_id():
         model = convolutional.build(training_data, height=height, width=width)
-    elif model_id is recurrent_l1.get_model_id():
+    elif model_id == recurrent_l1.get_model_id():
         model = recurrent_l1.build(training_data, height=height, width=width)
 
     if multi_gpu:
@@ -29,7 +30,7 @@ def build_model(training_data, model_id, height=28, width=28, multi_gpu=False, g
     return model
 
 
-def save_model(model, output):
+def save_model_to_file(model, output):
     file_yaml = '{}/model.yaml'.format(output)
     weights_yaml = '{}/model.h5'.format(output)
 
