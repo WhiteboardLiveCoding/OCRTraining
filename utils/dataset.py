@@ -31,7 +31,7 @@ def append_datasets(arr1, arr2):
     return np.append(arr1, arr2, axis=0)
 
 
-def load_data(emnist_file_path, wlc_file_path):
+def load_data(emnist_file_path, wlc_file_path, fix_emnist=False):
     height, width = 28, 28
 
     emnist = loadmat(emnist_file_path)
@@ -51,19 +51,20 @@ def load_data(emnist_file_path, wlc_file_path):
     training_images, training_labels = _extract_images_and_labels(emnist)
     testing_images, testing_labels = _extract_images_and_labels(emnist, training_data=False)
 
-    # Reshape training data to be valid
-    _len = len(training_images)
-    for i in range(len(training_images)):
-        print('%d/%d (%.2lf%%)' % (i + 1, _len, ((i + 1) / _len) * 100), end='\r')
-        training_images[i] = _rotate_image(training_images[i])
-    print('')
+    if fix_emnist:
+        # Reshape training data to be valid
+        _len = len(training_images)
+        for i in range(len(training_images)):
+            print('%d/%d (%.2lf%%)' % (i + 1, _len, ((i + 1) / _len) * 100), end='\r')
+            training_images[i] = _rotate_image(training_images[i])
+        print('')
 
-    # Reshape testing data to be valid
-    _len = len(testing_images)
-    for i in range(len(testing_images)):
-        print('%d/%d (%.2lf%%)' % (i + 1, _len, ((i + 1) / _len) * 100), end='\r')
-        testing_images[i] = _rotate_image(testing_images[i])
-    print('')
+        # Reshape testing data to be valid
+        _len = len(testing_images)
+        for i in range(len(testing_images)):
+            print('%d/%d (%.2lf%%)' % (i + 1, _len, ((i + 1) / _len) * 100), end='\r')
+            testing_images[i] = _rotate_image(testing_images[i])
+        print('')
 
     if wlc_file_path:
         wlc_training_images, wlc_training_labels = _extract_images_and_labels(wlc)

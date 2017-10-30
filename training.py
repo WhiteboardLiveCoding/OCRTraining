@@ -20,6 +20,7 @@ def parse_arguments():
     parser.add_argument('-d', '--device', type=str, default='/cpu:0', help='device to be used for training')
     parser.add_argument('-m', '--model', type=str, default='convolutional', help='keras model to be trained')
     parser.add_argument('-p', '--parallel', action='store_true', default=False, help='use multi gpu model')
+    parser.add_argument('-f', '--fix-emnist', action='store_true', default=False, help='fix the images from emnist')
 
     return parser.parse_args()
 
@@ -36,7 +37,7 @@ def main():
     if not os.path.exists(bin_dir):
         os.makedirs(bin_dir)
 
-    training_data = load_data(args.emnist, args.wlc)
+    training_data = load_data(args.emnist, args.wlc, fix_emnist=args.fix_emnist)
 
     model = build_model(training_data=training_data,
                         model_id=args.model,
