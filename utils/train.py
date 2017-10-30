@@ -16,10 +16,10 @@ def train(model, training_data, callback=True, batch_size=32, epochs=10, device=
             raise ValueError('Target \'{}\' could not be found. Devices available are {}'.format(device,
                                                                                                  available_devices))
 
+        score = _train_model(model, training_data, callback=callback, batch_size=batch_size, epochs=epochs)
+    else:
         with tf.device(device):
             score = _train_model(model, training_data, callback=callback, batch_size=batch_size, epochs=epochs)
-    else:
-        score = _train_model(model, training_data, callback=callback, batch_size=batch_size, epochs=epochs)
 
     print('Test score:', score[0])
     print('Test accuracy:', score[1])
