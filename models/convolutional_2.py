@@ -13,7 +13,7 @@ def build(training_data, height=28, width=28):
     input_shape = (height, width, 1)
 
     model = Sequential([
-        Conv2D(32, (3, 3)),
+        Conv2D(32, (3, 3), input_shape=input_shape),
         LeakyReLU(),
         BatchNormalization(axis=1),
         Conv2D(32, (3, 3)),
@@ -32,7 +32,7 @@ def build(training_data, height=28, width=28):
         LeakyReLU(),
         BatchNormalization(),
         Dropout(0.4),
-        Dense(10, activation='softmax')
+        Dense(nb_classes, activation='softmax')
     ])
 
     return model
