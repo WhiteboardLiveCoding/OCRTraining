@@ -22,19 +22,26 @@ It also houses the script to add images to the dataset.
     -o OUTPUT, --output OUTPUT
                           output directory for the model(without /)
                           default: bin
+    --height HEIGHT       height of the input image
+                          default: 28
+    --width WIDTH         width of the input image
+                          default: 28
     -e EPOCHS, --epochs EPOCHS
                           number of epochs to train the model on
                           default: 10
-    -g GPU, --gpu GPU     number of the gpu to be used
+    -g GPUS, --gpus GPUS  number of gpus to be used
                           default: 1
     -b BATCH, --batch BATCH
                           batch size for training
                           default: 64
+    -d DEVICE, --device DEVICE
+                        device to be used for training
+                        default: /cpu:0
     -m MODEL, --model MODEL
                           keras model to be trained
                           default: convolutional
-    -p , --parallel
-                          use multi gpu model
+    -p , --parallel       use multi gpu model
+    -f, --fix-emnist      fix the images from emnist
 
 
 #### [dataset.py](dataset.py)
