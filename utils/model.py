@@ -4,14 +4,19 @@ from keras.layers.merge import concatenate
 from keras.layers.core import Lambda
 from keras.models import save_model
 from keras.engine.training import Model
+from keras.optimizers import Adam
 
-from models import convolutional, convolutional_functional, convolutional_2, recurrent_l1
+from models import convolutional, convolutional_functional, convolutional_2, recurrent_l1, kanji
 
 from utils.device import get_available_devices, normalize_device_name
+
+INITIAL_ADAM_LEARNING_RATE = 0.01
 
 
 def build_model(training_data, model_id, height=28, width=28, multi_gpu=False, gpus=1):
     model = None
+    parallel_model = None
+    optimizer='adadelta'
 
     with tf.device('/cpu:0'):
         if model_id == convolutional.get_model_id():
@@ -22,18 +27,27 @@ def build_model(training_data, model_id, height=28, width=28, multi_gpu=False, g
             model = convolutional_functional.build(training_data, height=height, width=width)
         elif model_id == recurrent_l1.get_model_id():
             model = recurrent_l1.build(training_data, height=height, width=width)
-
-    if multi_gpu:
-        model = _use_multi_gpu(model, gpus=gpus)
+        elif model_id == kanji.get_model_id():
+            model = kanji.build(training_data, height=height, width=width)
+            optimizer = Adam(lr=INITIAL_ADAM_LEARNING_RATE)
 
     if model:
-        model.compile(loss='categorical_crossentropy',
-                      optimizer='adadelta',
-                      metrics=['accuracy'])
+        if multi_gpu:
+            parallel_model = _use_multi_gpu(model, gpus=gpus)
+            parallel_model.compile(loss='categorical_crossentropy',
+                                   optimizer=optimizer,
+                                   metrics=['accuracy'])
+            print('Parallel Model Summary')
+            print(parallel_model.summary())
+        else:
+            model.compile(loss='categorical_crossentropy',
+                          optimizer=optimizer,
+                          metrics=['accuracy'])
 
+        print('Model Summary')
         print(model.summary())
 
-    return model
+    return model, parallel_model
 
 
 def save_model_to_file(model, output):

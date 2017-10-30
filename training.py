@@ -39,18 +39,31 @@ def main():
 
     training_data = load_data(args.emnist, args.wlc, fix_emnist=args.fix_emnist)
 
-    model = build_model(training_data=training_data,
-                        model_id=args.model,
-                        height=args.height,
-                        width=args.width,
-                        multi_gpu=args.parallel,
-                        gpus=args.gpus)
+    model, parallel_model = build_model(training_data=training_data,
+                                        model_id=args.model,
+                                        height=args.height,
+                                        width=args.width,
+                                        multi_gpu=args.parallel,
+                                        gpus=args.gpus)
 
     if not model:
         print('Model {} does not exist.'.format(args.model))
         sys.exit(1)
 
-    train(model, training_data, epochs=args.epochs, batch_size=args.batch, device=args.device, parallel=args.parallel)
+    if parallel_model:
+        train(parallel_model,
+              training_data,
+              epochs=args.epochs,
+              batch_size=args.batch,
+              device=args.device,
+              parallel=args.parallel)
+    else:
+        train(model,
+              training_data,
+              epochs=args.epochs,
+              batch_size=args.batch,
+              device=args.device,
+              parallel=args.parallel)
 
     save_model_to_file(model, args.output)
 
