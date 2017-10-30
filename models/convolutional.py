@@ -10,7 +10,7 @@ def get_model_id():
 
 def build(training_data, height=28, width=28):
     # Initialize data
-    _, _, mapping, nb_classes = training_data
+    _, _, _, nb_classes = training_data
     input_shape = (height, width, 1)
 
     # Hyperparameters
