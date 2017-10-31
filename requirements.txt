@@ -1,7 +1,8 @@
 tensorflow
+tensorflow-gpu
 keras
 h5py
 numpy
 scipy
 pillow
-flask
+opencv-python
