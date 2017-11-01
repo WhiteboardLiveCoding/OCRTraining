@@ -1,6 +1,6 @@
 from os.path import basename, splitext
 
-from keras.layers import MaxPooling2D, Convolution2D, Dropout, Dense, Flatten, Activation
+from keras.layers import MaxPooling2D, Conv2D, Dropout, Dense, Flatten, Activation
 from keras.models import Sequential
 
 
@@ -12,21 +12,24 @@ def get_model_id():
 def build(training_data, height=28, width=28):
     # Initialize data
     _, _, _, nb_classes = training_data
+    kernel_size = (3, 3)
+    pool_size = (2, 2)
+    nb_filters = 32
     input_shape = (height, width, 1)
 
     model = Sequential()
-    model.add(Convolution2D(32, 3, 3, input_shape=input_shape))
+    model.add(Conv2D(nb_filters, kernel_size=kernel_size, input_shape=input_shape))
     model.add(Activation('relu'))
-    model.add(Convolution2D(32, 3, 3))
+    model.add(Conv2D(nb_filters, kernel_size=kernel_size))
     model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(MaxPooling2D(pool_size=pool_size))
     model.add(Dropout(0.5))
 
-    model.add(Convolution2D(64, 3, 3))
+    model.add(Conv2D(nb_filters * 2, kernel_size=kernel_size))
     model.add(Activation('relu'))
-    model.add(Convolution2D(64, 3, 3))
+    model.add(Conv2D(nb_filters * 2, kernel_size=kernel_size))
     model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(MaxPooling2D(pool_size=pool_size))
     model.add(Dropout(0.5))
 
     model.add(Flatten())
@@ -35,4 +38,5 @@ def build(training_data, height=28, width=28):
     model.add(Dropout(0.5))
     model.add(Dense(nb_classes))
     model.add(Activation('softmax'))
+
     return model

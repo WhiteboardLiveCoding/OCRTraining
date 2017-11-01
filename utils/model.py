@@ -6,8 +6,7 @@ from keras.models import save_model
 from keras.engine.training import Model
 from keras.optimizers import Adam
 
-from models import convolutional, convolutional_functional, convolutional_2, recurrent_l1, kanji, chinese, devanagari, \
-    japanese
+from models import convolutional, convolutional_2, recurrent_l1, kanji, chinese, devanagari, japanese
 
 from utils.device import get_available_devices, normalize_device_name
 
@@ -24,8 +23,6 @@ def build_model(training_data, model_id, height=28, width=28, multi_gpu=False, g
             model = convolutional.build(training_data, height=height, width=width)
         elif model_id == convolutional_2.get_model_id():
             model = convolutional_2.build(training_data, height=height, width=width)
-        elif model_id == convolutional_functional.get_model_id():
-            model = convolutional_functional.build(training_data, height=height, width=width)
         elif model_id == recurrent_l1.get_model_id():
             model = recurrent_l1.build(training_data, height=height, width=width)
         elif model_id == kanji.get_model_id():
