@@ -20,20 +20,20 @@ def build_model(training_data, model_id, height=28, width=28, multi_gpu=False, g
 
     with tf.device('/cpu:0'):
         if model_id == convolutional.get_model_id():
-            model = convolutional.build(training_data, height=height, width=width)
+            model = convolutional.build(training_data)
         elif model_id == convolutional_2.get_model_id():
-            model = convolutional_2.build(training_data, height=height, width=width)
+            model = convolutional_2.build(training_data)
         elif model_id == recurrent_l1.get_model_id():
-            model = recurrent_l1.build(training_data, height=height, width=width)
+            model = recurrent_l1.build(training_data)
         elif model_id == kanji.get_model_id():
-            model = kanji.build(training_data, height=height, width=width)
+            model = kanji.build(training_data)
             optimizer = Adam(lr=INITIAL_ADAM_LEARNING_RATE)
         elif model_id == chinese.get_model_id():
-            model = recurrent_l1.build(training_data, height=height, width=width)
+            model = chinese.build(training_data)
         elif model_id == devanagari.get_model_id():
-            model = recurrent_l1.build(training_data, height=height, width=width)
+            model = devanagari.build(training_data)
         elif model_id == japanese.get_model_id():
-            model = recurrent_l1.build(training_data, height=height, width=width)
+            model = japanese.build(training_data)
 
     if model:
         if multi_gpu:
