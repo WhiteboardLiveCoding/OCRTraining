@@ -1,4 +1,8 @@
 from __future__ import print_function
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from hyperopt import Trials, STATUS_OK, tpe
 from hyperas import optim
 from hyperas.distributions import choice, uniform
