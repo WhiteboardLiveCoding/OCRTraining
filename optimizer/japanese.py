@@ -14,7 +14,7 @@ def model(X_train, Y_train, X_test, Y_test):
     nb_classes = 94
     input_shape = (28, 28, 1)
 
-    nb_filters = 32  # number of convolutional filters to use
+    nb_filters = {{choice[32, 64, 128]}}  # number of convolutional filters to use
     pool_size = (2, 2)  # size of pooling area for max pooling
     kernel_size = (3, 3)  # convolution kernel size
 
@@ -34,18 +34,20 @@ def model(X_train, Y_train, X_test, Y_test):
     model.add(Dropout({{uniform(0, 1)}}))
 
     model.add(Flatten())
-    model.add(Dense(256))
+    model.add(Dense({{choice[256, 512, 1024]}}))
     model.add(Activation('relu'))
     model.add(Dropout({{uniform(0, 1)}}))
     model.add(Dense(nb_classes))
     model.add(Activation('softmax'))
 
-    model.compile(loss='categorical_crossentropy', optimizer='adadelta', metrics=['accuracy'])
+    model.compile(loss='categorical_crossentropy',
+                  optimizer={{choice(['rmsprop', 'adam', 'sgd'])}},
+                  metrics=['accuracy'])
 
     model.fit(X_train, Y_train,
               batch_size={{choice([64, 128])}},
-              nb_epoch=1,
-              verbose=2,
+              epochs=10,
+              verbose=1,
               validation_data=(X_test, Y_test))
 
     score, acc = model.evaluate(X_test, Y_test, verbose=0)
@@ -66,3 +68,6 @@ if __name__ == '__main__':
 
     print("Evalutation of best performing model:")
     print(best_model.evaluate(X_test, Y_test))
+
+    print("Best Model Summary:")
+    print(best_model.summary())
