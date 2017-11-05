@@ -14,6 +14,7 @@ from keras.layers.core import Dense, Dropout
 from optimizer.dataset import load_data
 from utils.model import save_model_to_file
 from utils.model import _use_multi_gpu
+from utils.device import get_available_devices, normalize_device_name
 
 
 def model(X_train, Y_train, X_test, Y_test):
@@ -70,7 +71,7 @@ if __name__ == '__main__':
 
     best_run, best_model = optim.minimize(model=model,
                                           data=load_data,
-                                          functions=[_use_multi_gpu],
+                                          functions=[_use_multi_gpu, get_available_devices, normalize_device_name],
                                           algo=tpe.suggest,
                                           max_evals=5,
                                           trials=Trials())
