@@ -10,6 +10,7 @@ from hyperas.distributions import choice, uniform
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Activation
 from keras.layers.core import Dense, Dropout
+from tensorflow.python.client import device_lib
 
 from optimizer.dataset import load_data
 from utils.model import save_model_to_file
@@ -68,10 +69,11 @@ def model(X_train, Y_train, X_test, Y_test):
 
 if __name__ == '__main__':
     X_train, Y_train, X_test, Y_test = load_data()
+    functions = [_use_multi_gpu, get_available_devices, normalize_device_name, device_lib]
 
     best_run, best_model = optim.minimize(model=model,
                                           data=load_data,
-                                          functions=[_use_multi_gpu, get_available_devices, normalize_device_name],
+                                          functions=functions,
                                           algo=tpe.suggest,
                                           max_evals=5,
                                           trials=Trials())
