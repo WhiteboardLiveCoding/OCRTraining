@@ -53,7 +53,7 @@ def model(X_train, Y_train, X_test, Y_test):
                       metrics=['accuracy'])
 
     par_model.fit(X_train, Y_train,
-                  batch_size={{choice([64, 128])}},
+                  batch_size={{choice([64, 128, 256, 512])}},
                   epochs=10,
                   verbose=1,
                   validation_data=(X_test, Y_test))
@@ -75,9 +75,6 @@ if __name__ == '__main__':
                                           algo=tpe.suggest,
                                           max_evals=10,
                                           trials=Trials())
-
-    print("Evalutation of best performing model:")
-    print(best_model.evaluate(X_test, Y_test))
 
     print("Best Model Summary:")
     print(best_model.summary())
