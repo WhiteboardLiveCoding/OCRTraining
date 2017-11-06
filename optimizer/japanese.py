@@ -10,12 +10,10 @@ from hyperas.distributions import choice, uniform
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Activation
 from keras.layers.core import Dense, Dropout
-from tensorflow.python.client import device_lib
 
 from optimizer.dataset import load_data
 from utils.model import save_model_to_file
-from utils.model import _use_multi_gpu
-from utils.device import get_available_devices, normalize_device_name
+from optimizer.device import use_multi_gpu
 
 
 def model(X_train, Y_train, X_test, Y_test):
@@ -48,17 +46,17 @@ def model(X_train, Y_train, X_test, Y_test):
     model.add(Dense(nb_classes))
     model.add(Activation('softmax'))
 
-    par_model = _use_multi_gpu(model, gpus=4)
+    par_model = use_multi_gpu(model, gpus=4)
 
     par_model.compile(loss='categorical_crossentropy',
-                  optimizer={{choice(['rmsprop', 'adam', 'sgd'])}},
-                  metrics=['accuracy'])
+                      optimizer={{choice(['rmsprop', 'adam', 'sgd'])}},
+                      metrics=['accuracy'])
 
     par_model.fit(X_train, Y_train,
-              batch_size={{choice([64, 128])}},
-              epochs=10,
-              verbose=1,
-              validation_data=(X_test, Y_test))
+                  batch_size={{choice([64, 128])}},
+                  epochs=10,
+                  verbose=1,
+                  validation_data=(X_test, Y_test))
 
     score, acc = par_model.evaluate(X_test, Y_test, verbose=0)
 
@@ -69,13 +67,13 @@ def model(X_train, Y_train, X_test, Y_test):
 
 if __name__ == '__main__':
     X_train, Y_train, X_test, Y_test = load_data()
-    functions = [_use_multi_gpu, get_available_devices, normalize_device_name, device_lib]
+    functions = [use_multi_gpu]
 
     best_run, best_model = optim.minimize(model=model,
                                           data=load_data,
                                           functions=functions,
                                           algo=tpe.suggest,
-                                          max_evals=5,
+                                          max_evals=10,
                                           trials=Trials())
 
     print("Evalutation of best performing model:")
