@@ -6,3 +6,5 @@ numpy
 scipy
 pillow
 opencv-python
+hyperas
+hyperopt
