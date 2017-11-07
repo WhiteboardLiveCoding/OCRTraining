@@ -54,7 +54,7 @@ def model(X_train, Y_train, X_test, Y_test):
 
     par_model.fit(X_train, Y_train,
                   batch_size={{choice([64, 128, 256, 512])}},
-                  epochs=10,
+                  epochs=1,
                   verbose=1,
                   validation_data=(X_test, Y_test))
 
@@ -73,11 +73,15 @@ if __name__ == '__main__':
                                           data=load_data,
                                           functions=functions,
                                           algo=tpe.suggest,
-                                          max_evals=10,
+                                          max_evals=5,
                                           trials=Trials())
 
     print("Best Model Summary:")
     print(best_model.summary())
+
+    bin_dir = os.path.dirname(os.path.realpath(__file__)) + "/o_japanese"
+    if not os.path.exists(bin_dir):
+        os.makedirs(bin_dir)
 
     save_model_to_file(best_model, "o_japanese")
 
