@@ -4,7 +4,7 @@ def load_data():
     from keras.utils import np_utils
 
     emnist_file_path = 'dataset/emnist-byclass-fixed.mat'
-    wlc_file_path = 'dataset/wlc-byclass-2017-10-23-22-20-27.197574.mat'
+    wlc_file_path = 'dataset/wlc-byclass-2017-11-02-22-05-00.850333.mat'
 
     height, width = 28, 28
 

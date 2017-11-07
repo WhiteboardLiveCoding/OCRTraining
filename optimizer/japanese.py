@@ -83,5 +83,6 @@ if __name__ == '__main__':
     if not os.path.exists(bin_dir):
         os.makedirs(bin_dir)
 
-    save_model_to_file(best_model, "o_japanese")
+    print("Saving artifacts to {}".format(bin_dir))
+    save_model_to_file(best_model, "optimizer/o_japanese")
 

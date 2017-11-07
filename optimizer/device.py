@@ -12,7 +12,7 @@ def use_multi_gpu(model, gpus):
                          'Received: `gpus=%d`' % gpus)
 
     target_devices = ['/cpu:0'] + ['/gpu:%d' % i for i in range(gpus)]
-    available_devices = ['/cpu:0']
+    available_devices = ['/cpu:0', '/gpu:0', '/gpu:1', '/gpu:2', '/gpu:3']
     for device in target_devices:
         if device not in available_devices:
             raise ValueError(
