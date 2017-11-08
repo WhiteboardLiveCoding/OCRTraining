@@ -2,7 +2,6 @@ import tensorflow as tf
 
 from keras.layers.merge import concatenate
 from keras.layers.core import Lambda
-from keras.models import save_model
 from keras.engine.training import Model
 from keras.optimizers import Adam
 
@@ -57,8 +56,11 @@ def build_model(training_data, model_id, height=28, width=28, multi_gpu=False, g
 
 
 def save_model_to_file(model, output):
-    file_yaml = '{}/model.yaml'.format(output)
-    weights_yaml = '{}/model.h5'.format(output)
+    from datetime import datetime
+    from keras.models import save_model
+
+    file_yaml = '{}/model-{}.yaml'.format(output, str(datetime.now()).replace(' ', '-').replace(':', '-'))
+    weights_yaml = '{}/model-{}.h5'.format(output, str(datetime.now()).replace(' ', '-').replace(':', '-'))
 
     model_yaml = model.to_yaml()
     with open(file_yaml, "w") as yaml_file:

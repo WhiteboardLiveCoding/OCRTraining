@@ -62,12 +62,20 @@ def model(X_train, Y_train, X_test, Y_test):
 
     print('Test accuracy:', acc)
 
+    save_model_to_file(model, "optimizer/o_japanese")
+
     return {'loss': -acc, 'status': STATUS_OK, 'model': model}
 
 
 if __name__ == '__main__':
     X_train, Y_train, X_test, Y_test = load_data()
-    functions = [use_multi_gpu]
+    functions = [use_multi_gpu, save_model_to_file]
+
+    bin_dir = os.path.dirname(os.path.realpath(__file__)) + "/o_japanese"
+    if not os.path.exists(bin_dir):
+        os.makedirs(bin_dir)
+
+    print("Saving artifacts to {}".format(bin_dir))
 
     best_run, best_model = optim.minimize(model=model,
                                           data=load_data,
@@ -78,11 +86,3 @@ if __name__ == '__main__':
 
     print("Best Model Summary:")
     print(best_model.summary())
-
-    bin_dir = os.path.dirname(os.path.realpath(__file__)) + "/o_japanese"
-    if not os.path.exists(bin_dir):
-        os.makedirs(bin_dir)
-
-    print("Saving artifacts to {}".format(bin_dir))
-    save_model_to_file(best_model, "optimizer/o_japanese")
-
