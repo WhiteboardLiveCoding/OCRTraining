@@ -9,8 +9,7 @@ import sys
 
 def parse_arguments():
     parser = argparse.ArgumentParser(usage='A training script for the Live Whiteboard Coding neural network')
-    parser.add_argument('--emnist', type=str, help='path for the EMNIST dataset', required=True)
-    parser.add_argument('--wlc', type=str, help='path for the WLC dataset')
+    parser.add_argument('--datasets', nargs='+', type=str, help='datasets to be used for training', required=True)
     parser.add_argument('-o', '--output', type=str, help='output directory for the model(without /)', default='bin')
     parser.add_argument('--height', type=int, default=28, help='height of the input image')
     parser.add_argument('--width', type=int, default=28, help='width of the input image')
@@ -20,7 +19,6 @@ def parse_arguments():
     parser.add_argument('-d', '--device', type=str, default='/cpu:0', help='device to be used for training')
     parser.add_argument('-m', '--model', type=str, default='convolutional', help='keras model to be trained')
     parser.add_argument('-p', '--parallel', action='store_true', default=False, help='use multi gpu model')
-    parser.add_argument('-f', '--fix-emnist', action='store_true', default=False, help='fix the images from emnist')
 
     return parser.parse_args()
 
@@ -37,7 +35,7 @@ def main():
     if not os.path.exists(bin_dir):
         os.makedirs(bin_dir)
 
-    training_data = load_data(args.emnist, args.wlc, fix_emnist=args.fix_emnist)
+    training_data = load_data(args.datasets)
 
     model, parallel_model = build_model(training_data=training_data,
                                         model_id=args.model,
