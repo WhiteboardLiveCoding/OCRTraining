@@ -19,6 +19,7 @@ def parse_arguments():
     parser.add_argument('-d', '--device', type=str, default='/cpu:0', help='device to be used for training')
     parser.add_argument('-m', '--model', type=str, default='convolutional', help='keras model to be trained')
     parser.add_argument('-p', '--parallel', action='store_true', default=False, help='use multi gpu model')
+    parser.add_argument('-v', '--verbose', type=int, default=1, help='verbose level for epochs')
 
     return parser.parse_args()
 
@@ -54,14 +55,16 @@ def main():
               epochs=args.epochs,
               batch_size=args.batch,
               device=args.device,
-              parallel=args.parallel)
+              parallel=args.parallel,
+              verbose=args.verbose)
     else:
         train(model,
               training_data,
               epochs=args.epochs,
               batch_size=args.batch,
               device=args.device,
-              parallel=args.parallel)
+              parallel=args.parallel,
+              verbose=args.verbose)
 
     save_model_to_file(model, args.output)
 
