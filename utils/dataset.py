@@ -31,50 +31,31 @@ def append_datasets(arr1, arr2):
     return np.append(arr1, arr2, axis=0)
 
 
-def load_data(emnist_file_path, wlc_file_path, fix_emnist=False):
+def load_data(datasets):
     height, width = 28, 28
 
-    emnist = loadmat(emnist_file_path)
-    wlc = None
+    dataset = loadmat(datasets[0])
 
-    if wlc_file_path:
-        wlc = loadmat(wlc_file_path)
-
-    mapping = {kv[0]: kv[1:][0] for kv in emnist['dataset'][0][0][2]}
-
-    if wlc_file_path:
-        mapping = {kv[0]: kv[1:][0] for kv in wlc['dataset'][0][0][2]}
-
-    pickle.dump(mapping, open('bin/mapping.p', 'wb'))
+    mapping = {kv[0]: kv[1:][0] for kv in dataset['dataset'][0][0][2]}
 
     # Load training data
-    training_images, training_labels = _extract_images_and_labels(emnist)
-    testing_images, testing_labels = _extract_images_and_labels(emnist, training_data=False)
+    training_images, training_labels = _extract_images_and_labels(dataset)
+    testing_images, testing_labels = _extract_images_and_labels(dataset, training_data=False)
 
-    if fix_emnist:
-        # Reshape training data to be valid
-        _len = len(training_images)
-        for i in range(len(training_images)):
-            print('%d/%d (%.2lf%%)' % (i + 1, _len, ((i + 1) / _len) * 100), end='\r')
-            training_images[i] = _rotate_image(training_images[i])
-        print('')
+    if len(datasets) > 1:
+        for ds_path in datasets[1:]:
+            ds = loadmat(ds_path)
 
-        # Reshape testing data to be valid
-        _len = len(testing_images)
-        for i in range(len(testing_images)):
-            print('%d/%d (%.2lf%%)' % (i + 1, _len, ((i + 1) / _len) * 100), end='\r')
-            testing_images[i] = _rotate_image(testing_images[i])
-        print('')
+            ds_training_images, ds_training_labels = _extract_images_and_labels(ds)
+            ds_testing_images, ds_testing_labels = _extract_images_and_labels(ds, training_data=False)
 
-    if wlc_file_path:
-        wlc_training_images, wlc_training_labels = _extract_images_and_labels(wlc)
-        wlc_testing_images, wlc_testing_labels = _extract_images_and_labels(wlc, training_data=False)
+            training_images = append_datasets(training_images, ds_training_images)
+            training_labels = append_datasets(training_labels, ds_training_labels)
 
-        training_images = append_datasets(training_images, wlc_training_images)
-        training_labels = append_datasets(training_labels, wlc_training_labels)
+            testing_images = append_datasets(testing_images, ds_testing_images)
+            testing_labels = append_datasets(testing_labels, ds_testing_labels)
 
-        testing_images = append_datasets(testing_images, wlc_testing_images)
-        testing_labels = append_datasets(testing_labels, wlc_testing_labels)
+    pickle.dump(mapping, open('bin/mapping.p', 'wb'))
 
     # Extend the arrays to (None, 28, 28, 1)
     training_images = training_images.reshape(training_images.shape[0], height, width, 1)
