@@ -42,7 +42,7 @@ def load_data(datasets):
     training_images, training_labels = _extract_images_and_labels(dataset)
     testing_images, testing_labels = _extract_images_and_labels(dataset, training_data=False)
 
-    if len(datasets) > 0:
+    if len(datasets) > 1:
         for ds_path in datasets[1:]:
             ds = loadmat(ds_path)
 
