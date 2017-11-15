@@ -55,12 +55,16 @@ def build_model(training_data, model_id, height=28, width=28, multi_gpu=False, g
     return model, parallel_model
 
 
-def save_model_to_file(model, output):
+def save_model_to_file(model, output, use_ts=False):
     from datetime import datetime
     from keras.models import save_model
 
-    file_yaml = '{}/model-{}.yaml'.format(output, str(datetime.now()).replace(' ', '-').replace(':', '-'))
-    weights_yaml = '{}/model-{}.h5'.format(output, str(datetime.now()).replace(' ', '-').replace(':', '-'))
+    file_yaml = '{}/model.yaml'.format(output)
+    weights_yaml = '{}/model.h5'.format(output)
+
+    if use_ts:
+        file_yaml = '{}/model-{}.yaml'.format(output, str(datetime.now()).replace(' ', '-').replace(':', '-'))
+        weights_yaml = '{}/model-{}.h5'.format(output, str(datetime.now()).replace(' ', '-').replace(':', '-'))
 
     model_yaml = model.to_yaml()
     with open(file_yaml, "w") as yaml_file:
