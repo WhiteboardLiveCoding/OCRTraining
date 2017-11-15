@@ -62,7 +62,7 @@ def model(X_train, Y_train, X_test, Y_test):
 
     print('Test accuracy:', acc)
 
-    save_model_to_file(model, "optimizer/o_japanese")
+    save_model_to_file(model, "optimizer/o_japanese", use_ts=True)
 
     return {'loss': -acc, 'status': STATUS_OK, 'model': model}
 
